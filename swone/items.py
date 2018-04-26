@@ -12,6 +12,7 @@ class SwoneItem(scrapy.Item):
     blog_title = scrapy.Field()
     blog_date = scrapy.Field()
     url = scrapy.Field()
+    url_object_id = scrapy.Field() #md5
     front_image_url = scrapy.Field()
     front_image_path = scrapy.Field()  #本地路径
     vote_up = scrapy.Field()
@@ -19,6 +20,7 @@ class SwoneItem(scrapy.Item):
     tags = scrapy.Field()
     content = scrapy.Field()
     blog_bookmark = scrapy.Field()
+
 
 
 
