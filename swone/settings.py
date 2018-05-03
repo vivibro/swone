@@ -68,6 +68,7 @@ ITEM_PIPELINES = {
    'swone.pipelines.SwonePipeline': 300,
    # 'scrapy.pipelines.images.ImagesPipeline':1,
    # 数字表示处理顺序，越小越优先
+   'swone.pipelines.JsonExporterPipelines':2,
    'swone.pipelines.SwoneImagePipeline':1
 }
 IMAGES_URLS_FIELD = "front_image_url" #设置爬取图片的配置
