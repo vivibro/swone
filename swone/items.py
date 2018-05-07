@@ -14,7 +14,7 @@ class SwoneItem(scrapy.Item):
     url = scrapy.Field()
     url_object_id = scrapy.Field() #md5
     front_image_url = scrapy.Field()
-    front_image_path = scrapy.Field()  #本地路径
+    # front_image_path = scrapy.Field()  #本地路径
     vote_up = scrapy.Field()
     comment_num = scrapy.Field()
     tags = scrapy.Field()

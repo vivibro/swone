@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import re
+import os
+import datetime
 from scrapy.http import Request
 from urllib import parse
 from swone.items import SwoneItem
 from swone.utils.common import get_md5
-import datetime
+
 
 class JobboleSpider(scrapy.Spider):
     name = 'jobbole'
@@ -96,7 +98,6 @@ class JobboleSpider(scrapy.Spider):
         except Exception as e:#如果异常就返回当前时间
             blog_date = datetime.datetime.now().date()
         swone_items["blog_date"] = blog_date
-
         swone_items["url"] = response.url
         swone_items["front_image_url"] = [front_image_url]  #图必须传递进来是一个数组 因为在pipelines里面的imagges中方法是循环
         swone_items["vote_up"] = vote_up

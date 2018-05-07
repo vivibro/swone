@@ -65,11 +65,13 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'swone.pipelines.SwonePipeline': 300,
-   # 'scrapy.pipelines.images.ImagesPipeline':1,
-   # 数字表示处理顺序，越小越优先
-   'swone.pipelines.JsonExporterPipelines':2,
-   'swone.pipelines.SwoneImagePipeline':1
+   # 'swone.pipelines.SwonePipeline': 1,
+   'scrapy.pipelines.images.ImagesPipeline':2,
+   # # 数字表示处理顺序，越小越优先
+   # 'swone.pipelines.JsonExporterPipelines':2,
+   # 'swone.pipelines.SwoneImagePipeline':1
+   #  'swone.pipelines.MysqlPipeline':1
+   'swone.pipelines.MysqlTwistedPipline':1
 }
 IMAGES_URLS_FIELD = "front_image_url" #设置爬取图片的配置
 project_dir = os.path.abspath(os.path.dirname(__file__))  #__file__表示当前setting文件 里面表示获取当前目录名称 外面获取当前路径
@@ -99,3 +101,7 @@ IMAGES_STORE = os.path.join(project_dir, "images") #配置图片路径   相对�
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+MYSQL_HOST = "127.0.0.1"
+MYSQL_DBNAME = "swone"
+MYSQL_USER = "root"
+MYSQL_PASSWORD = "root"
