@@ -66,12 +66,13 @@ ROBOTSTXT_OBEY = False
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    # 'swone.pipelines.SwonePipeline': 1,
-   'scrapy.pipelines.images.ImagesPipeline':2,
+   # 'scrapy.pipelines.images.ImagesPipeline':2,
    # # 数字表示处理顺序，越小越优先
    # 'swone.pipelines.JsonExporterPipelines':2,
    # 'swone.pipelines.SwoneImagePipeline':1
    #  'swone.pipelines.MysqlPipeline':1
-   'swone.pipelines.MysqlTwistedPipline':1
+   # 'swone.pipelines.MysqlTwistedPipline':1
+   "swone.pipelines.SwonePipeline":1
 }
 IMAGES_URLS_FIELD = "front_image_url" #设置爬取图片的配置
 project_dir = os.path.abspath(os.path.dirname(__file__))  #__file__表示当前setting文件 里面表示获取当前目录名称 外面获取当前路径

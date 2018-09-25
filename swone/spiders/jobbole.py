@@ -7,6 +7,7 @@ from scrapy.http import Request
 from urllib import parse
 from swone.items import SwoneItem
 from swone.utils.common import get_md5
+from scrapy.loader import ItemLoader
 
 
 class JobboleSpider(scrapy.Spider):
@@ -15,6 +16,7 @@ class JobboleSpider(scrapy.Spider):
     start_urls = ['http://blog.jobbole.com/all-posts/']
 
     def parse(self, response):
+
         '''
         1.获取文章列表页中的文章url并交给scrypy下载后并进行解析
         2.获取下一页的url，下载完成后交给parse
@@ -27,6 +29,7 @@ class JobboleSpider(scrapy.Spider):
         # 改写1，不获取网址 仅获取该node
         post_nodes = response.css("#archive .post .post-thumb a")
 
+
         # for post_url in post_urls:
         #     yield Request(url = parse.urljoin(response.url,post_url),meta = {"front_image_url"},callback = self.parse_detail)
         # 改写 1
@@ -37,74 +40,97 @@ class JobboleSpider(scrapy.Spider):
             yield Request(url = parse.urljoin(response.url,post_url),meta = {"front_image_url":image_url},callback = self.parse_detail)
 
 
-        # 提取下一页给scrapy下载
-        next_urls = response.css(".next.page-numbers::attr(href)").extract_first()
-
-        if next_urls:
-            yield Request(url=parse.urljoin(response.url, next_urls), callback=self.parse)
+        # # 提取下一页给scrapy下载
+        # next_urls = response.css(".next.page-numbers::attr(href)").extract_first()
+        #
+        # if next_urls:
+        #     yield Request(url=parse.urljoin(response.url, next_urls), callback=self.parse)
 
     def parse_detail(self,response):
-        #提取文章的具体字段
 
-        #实例化items
-        swone_items = SwoneItem()
 
-        # 通过css选择器提取字段
-        # 标题
-        # class为entry-header的节点       类选择器::    提取
-        blog_title = response.css(".entry-header h1::text").extract()[0]
-        # 日期
-        blog_date = response.css("p.entry-meta-hide-on-mobile::text").extract()[0].replace("·","").strip()
-        # 点赞
-        vote_up = response.css("span.vote-post-up  h10::text").extract()[0]
-        # 封面图url
+        # #提取文章的具体字段
+        #
+        # #实例化items
+        # swone_items = SwoneItem()
+        #
+        # # 通过css选择器提取字段
+        # # 标题
+        # # class为entry-header的节点       类选择器::    提取
+        # blog_title = response.css(".entry-header h1::text").extract()[0]
+        # # 日期
+        # blog_date = response.css("p.entry-meta-hide-on-mobile::text").extract()[0].replace("·","").strip()
+        # # 点赞
+        # vote_up = response.css("span.vote-post-up  h10::text").extract()[0]
+        # # 封面图url
         front_image_url = response.meta.get("front_image_url","")
-        # 字典查询方法get不会抛出异常 参数1：key  参数2：默认值
+        # # 字典查询方法get不会抛出异常 参数1：key  参数2：默认值
+        #
+        # # 收藏
+        # # blog_bookmark = re.match(".*?(\d+).*",response.css("span.bookmark-btn::text").extract()[0]).group(1)
+        # # 需要考虑无法匹配到数字的情况，需要有一个默认值0
+        # blog_bookmark = response.css("span.bookmark-btn::text").extract()[0]
+        # match_bb = re.match(".*?(\d+).*",blog_bookmark)
+        # if match_bb:
+        #     blog_bookmark = int(match_bb.group(1))
+        # else:
+        #     blog_bookmark = 0
+        # #评论
+        # # comment = re.match(".*?(\d+).*", response.css("a[href='#article-comment'] span::text").extract()[0]).group(1)
+        # comment_num = response.css("a[href='#article-comment'] span::text").extract()[0]
+        # match_cn = re.match(".*?(\d+).*",comment_num)
+        # if match_cn:
+        #     comment_num = int(match_cn.group(1))
+        # else:
+        #     comment_num = 0
+        #
+        #
+        # # 正文
+        # content = response.css('div.entry').extract()[0]
+        # #标签
+        # tags = response.css('.entry-meta-hide-on-mobile a::text').extract()
+        # tags = [element for element in tags if not element.strip().endswith("评论")]
+        # #                                                             endwith("评论"）
+        # tags = ",".join(tags)
+        #
+        #
+        # # 赋值到实例变量
+        # swone_items["url_object_id"] = get_md5(response.url)
+        # swone_items["blog_title"] = blog_title
+        #
+        # try:#将日期字符串格式转化为日期的数据格式 用到datetime这个库
+        #     blog_date = datetime.datetime.strptime(blog_date,"%Y/%m/%d").date()
+        # except Exception as e:#如果异常就返回当前时间
+        #     blog_date = datetime.datetime.now().date()
+        # swone_items["blog_date"] = blog_date
+        # swone_items["url"] = response.url
+        # swone_items["front_image_url"] = [front_image_url]  #图必须传递进来是一个数组 因为在pipelines里面的imagges中方法是循环
+        # swone_items["vote_up"] = vote_up
+        # swone_items["comment_num"] = comment_num
+        # swone_items["tags"] = tags
+        # swone_items["content"] = content
+        # swone_items["blog_bookmark"] = blog_bookmark
 
-        # 收藏
-        # blog_bookmark = re.match(".*?(\d+).*",response.css("span.bookmark-btn::text").extract()[0]).group(1)
-        # 需要考虑无法匹配到数字的情况，需要有一个默认值0
-        blog_bookmark = response.css("span.bookmark-btn::text").extract()[0]
-        match_bb = re.match(".*?(\d+).*",blog_bookmark)
-        if match_bb:
-            blog_bookmark = int(match_bb.group(1))
-        else:
-            blog_bookmark = 0
-        #评论
-        # comment = re.match(".*?(\d+).*", response.css("a[href='#article-comment'] span::text").extract()[0]).group(1)
-        comment_num = response.css("a[href='#article-comment'] span::text").extract()[0]
-        match_cn = re.match(".*?(\d+).*",comment_num)
-        if match_cn:
-            comment_num = int(match_cn.group(1))
-        else:
-            comment_num = 0
+        # 通过Item_loader加载
+        # 实例一个itemloader 参数需要实例一个预设的item，以及返回的response
+        # 传递的是一个实例
+        item_loader = ItemLoader(item=SwoneItem(),response=response)
+        # 填充item_loader 三种填充方法
+        # item_loader的三种重要方法 xpath css value
+        item_loader.add_css("blog_title",".entry-header h1::text")
+        item_loader.add_value("url",response.url)
+        item_loader.add_value('url_object_id',get_md5(response.url))
+        item_loader.add_css("blog_date","p.entry-meta-hide-on-mobile::text")
+        item_loader.add_value("front_image_url",[front_image_url])
+        item_loader.add_css("vote_up","span.vote-post-up  h10::text")
+        item_loader.add_css("comment_num","a[href='#article-comment'] span::text")
+        item_loader.add_css("blog_bookmark","span.bookmark-btn::text")
+        item_loader.add_css("tags",'.entry-meta-hide-on-mobile a::text')
+        item_loader.add_css("content",'div.entry')
 
+        swone_items = item_loader.load_item()
+        # 调用默认的load_item方法生成的swone_items每个元素均为list
 
-        # 正文
-        content = response.css('div.entry').extract()[0]
-        #标签
-        tags = response.css('.entry-meta-hide-on-mobile a::text').extract()
-        tags = [element for element in tags if not element.strip().endswith("评论")]
-        #                                                             endwith("评论"）
-        tags = ",".join(tags)
-
-
-        # 赋值到实例变量
-        swone_items["url_object_id"] = get_md5(response.url)
-        swone_items["blog_title"] = blog_title
-
-        try:#将日期字符串格式转化为日期的数据格式 用到datetime这个库
-            blog_date = datetime.datetime.strptime(blog_date,"%Y/%m/%d").date()
-        except Exception as e:#如果异常就返回当前时间
-            blog_date = datetime.datetime.now().date()
-        swone_items["blog_date"] = blog_date
-        swone_items["url"] = response.url
-        swone_items["front_image_url"] = [front_image_url]  #图必须传递进来是一个数组 因为在pipelines里面的imagges中方法是循环
-        swone_items["vote_up"] = vote_up
-        swone_items["comment_num"] = comment_num
-        swone_items["tags"] = tags
-        swone_items["content"] = content
-        swone_items["blog_bookmark"] = blog_bookmark
 
         # 传递到pipelines中去
         yield swone_items
